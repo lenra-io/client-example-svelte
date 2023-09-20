@@ -1,0 +1,48 @@
+generator:
+  dofigen:
+    builders:
+      - name: module-loader
+        from: &image "docker.io/bitnami/node:18"
+        workdir: /tmp/module
+        adds:
+          - package.json
+          - package-lock.json
+        script:
+          - npm ci --omit=dev --cache /tmp/cache
+        caches:
+          - /tmp/cache
+      - name: builder
+        from: *image
+        workdir: /tmp/app
+        adds:
+          - .
+        script:
+          - npm i --cache /tmp/cache
+          - cat node_modules/@lenra/app/dist/lib/gen/names.d.ts
+          - npm run build
+        caches:
+          - /tmp/cache
+    from: *image
+    workdir: /app
+    artifacts:
+      - builder: module-loader
+        source: "/tmp/module/"
+        destination: "/app/"
+      - builder: builder
+        source: "/tmp/app/dist/"
+        destination: "/app/dist/"
+      - builder: builder
+        source: "/tmp/app/resources/"
+        destination: "/app/resources/"
+    cmd:
+      - npm
+      - start
+    ports:
+      - 3000
+    envs:
+      NODE_ENV: production
+    ignores:
+      - "**"
+      - "!/*.json"
+      - "!/src/"
+      - "!/resources/"
