@@ -27,6 +27,6 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@lenra/client": "file:../../../lenra/libs/lenra-js"
+		"@lenra/client": "file:../../lenra-io/client-lib-js"
 	}
 }

@@ -1,33 +1,28 @@
 <script lang="ts">
+	import type { LenraApp } from "@lenra/client";
 	import { spring } from "svelte/motion";
-	import { LenraApp } from "@lenra/client";
 
+	export let app: LenraApp;
+	export let routeName: string;
+
+	console.log('counter', routeName, app)
 	let count = 0;
-	const app = new LenraApp({
-		appName: "Example Client",
-		clientId: "XXX-XXX-XXX",
-	});
-	let increment = () => {
-		count += 1;
-	};
 
-	app.connect().then(() => {
-		console.log("Connected !");
+	let increment = () => {	};
+	let decrement = () => {	};
 
-		const counters = document.querySelectorAll(".counter");
+	const counters = document.querySelectorAll(".counter");
 
-		counters.forEach((counter) => {
-			const button = counter.querySelector("button");
-			const output = counter.querySelector("output");
-			const route = app.route(`/${counter.id}`, (data) => {
-				count = data.value;
-				// button.onclick = () => {
-				// 	output.classList.add("loading");
-				// 	route.callListener(data.increment).then(() => {
-				// 		output.classList.remove("loading");
-				// 	});
-				// };
-			});
+	counters.forEach((counter) => {
+		const route = app.route(routeName, (data) => {
+			count = data.value;
+
+			increment = () => {
+				route.callListener(data.onIncrement)
+			};
+			decrement = () => {
+				route.callListener(data.onDecrement)
+			};
 		});
 	});
 
@@ -43,7 +38,7 @@
 
 <div class="counter">
 	<button
-		on:click={() => (count -= 1)}
+		on:click={decrement}
 		aria-label="Decrease the counter by one"
 	>
 		<svg aria-hidden="true" viewBox="0 0 1 1">
