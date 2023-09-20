@@ -27,6 +27,6 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@lenra/client": "file:../../../lenra/libs/lenra-js"
+		"@lenra/client": "^1.0.0-beta.3"
 	}
 }

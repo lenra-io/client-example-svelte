@@ -1,7 +1,24 @@
-<script>
-	import Counter from './Counter.svelte';
-	import welcome from '$lib/images/svelte-welcome.webp';
-	import welcome_fallback from '$lib/images/svelte-welcome.png';
+<script lang="ts">
+	import { onMount } from "svelte";
+	import { LenraApp } from "@lenra/client";
+
+	import Counter from "./Counter.svelte";
+	import welcome from "$lib/images/svelte-welcome.webp";
+	import welcome_fallback from "$lib/images/svelte-welcome.png";
+
+	let isConnected = false;
+	let app: LenraApp;
+	onMount(() => {
+		app = new LenraApp({
+			appName: "Example Client",
+			clientId: "XXX-XXX-XXX",
+		});
+
+		app.connect().then(() => {
+			console.log("Connected !");
+			isConnected = true;
+		});
+	});
 </script>
 
 <svelte:head>
@@ -25,7 +42,12 @@
 		try editing <strong>src/routes/+page.svelte</strong>
 	</h2>
 
-	<Counter />
+	{#if isConnected === true}
+		<Counter {app} routeName="/counter/global" />
+		<Counter {app} routeName="/counter/me" />
+	{:else}
+		<p>Loading...</p>
+	{/if}
 </section>
 
 <style>
